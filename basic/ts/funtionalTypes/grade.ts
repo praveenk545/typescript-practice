@@ -1,11 +1,18 @@
-type user = Record<number, { name: string; mark: makrs[] }>;
-interface makrs {
+type uniqueId = Record<string, string>;
+interface Marks {
   math: number;
   phy: number;
   cs: number;
   eng: number;
 }
-enum GradeLevel {
+interface user {
+  id: number;
+  user: {
+    name: string;
+    marks: number[];
+  };
+}
+const enum GradeLevel {
   O = "A+",
   A = "A",
   B = "B",
@@ -14,10 +21,26 @@ enum GradeLevel {
   E = "E",
   F = "F",
 }
-type response = Record<
-  number,
-  { id: number; name: string; grade: string; marks: makrs[] }
->;
+
+interface pass {
+  pass: () => string;
+}
+interface fail {
+  fail: () => string;
+}
+
+type status = {
+  pass: pass;
+  fail: fail;
+};
+interface UserDetails {
+  name: string;
+  grade: GradeLevel;
+  percentage: number;
+  marks: Marks;
+  result: { status: string };
+}
+type response = Record<number, UserDetails>;
 class Grade {
   values: user[] = [];
   constructor(value: user) {
@@ -30,21 +53,18 @@ class Grade {
   getUser(): response {
     const result: response = {};
 
-    let userId = 0;
+    for (const v of this.values) {
+      const gradeDetails = this.getGrade(v.user.marks);
+      const [math, phy, cs, eng] = gradeDetails.marks;
+      const userStatus = this.getStatus(gradeDetails.grade);
 
-    for (const record of this.values) {
-      for (const key in record) {
-        const value = record[key];
-
-        result[userId] = {
-          id: userId,
-          name: value.name,
-          grade: "",
-          marks: value.mark,
-        };
-
-        userId++;
-      }
+      result[v.id] = {
+        name: v.user.name,
+        grade: this.setGrade(gradeDetails.percentage),
+        percentage: gradeDetails.percentage || 0,
+        marks: { math, phy, cs, eng },
+        result: userStatus,
+      };
     }
 
     return result;
@@ -52,25 +72,20 @@ class Grade {
   // hasUser(id: number): response {
   //   return;
   // }
-  getGrade(marks: makrs[]) {
-    let getTotal = 0;
-    let percentage = 0;
-    let grade;
-    const overAll = mark.length * 100;
-    const set = new Set([marks]).forEach((itm) => {
-      getTotal = itm.reduce((acc: number, curr: any) => acc + curr, 0);
-      percentage = getTotal / mark.length;
-      grade = this.setGrade(percentage);
-    });
+  getGrade(marks: number[]) {
+    const total = marks.reduce((acc: number, curr: any) => acc + curr, 0);
+    const percentage = total / marks.length;
+    const grade = this.setGrade(percentage);
+
     return {
-      getTotal,
-      percentage,
-      grade,
+      total: total,
+      percentage: percentage,
+      grade: grade,
+      marks,
     };
   }
-  setGrade(percentage: number | undefined | null) {
-    if (percentage == null) return;
-
+  setGrade(percentage: number): GradeLevel {
+    if (percentage == null) return GradeLevel.F;
     switch (true) {
       case percentage === 100:
         return GradeLevel.O;
@@ -88,5 +103,35 @@ class Grade {
         return GradeLevel.F;
     }
   }
+  getStatus(grade: string) {
+    const s: status = {
+      pass: {
+        pass: () => "Pass",
+      },
+      fail: {
+        fail: () => "Fail",
+      },
+    };
+    return grade !== "F"
+      ? { status: s.pass.pass() }
+      : { status: s.fail.fail() };
+  }
   nextLevel() {}
 }
+let sampleObj = {
+  id: 1,
+  user: {
+    name: "el",
+    marks: [99, 95, 95, 88],
+  },
+};
+let sampleObj_2 = {
+  id: 2,
+  user: {
+    name: "kal",
+    marks: [99, 95, 95, 88],
+  },
+};
+const test = new Grade(sampleObj);
+test.add(sampleObj_2);
+console.log(test.getUser());
