@@ -69,9 +69,19 @@ class Grade {
 
     return result;
   }
-  // hasUser(id: number): response {
-  //   return;
-  // }
+  hasUser(id: number) {
+    const users = this.getUser();
+    //     if (users) {
+    //   for (const user of Object.values(users)) {
+    //     console.log(user);
+    //   }
+    // }
+    if (!users) return null;
+    return {
+      id: id,
+      user: users[id],
+    };
+  }
   getGrade(marks: number[]) {
     const total = marks.reduce((acc: number, curr: any) => acc + curr, 0);
     const percentage = total / marks.length;
@@ -134,4 +144,5 @@ let sampleObj_2 = {
 };
 const test = new Grade(sampleObj);
 test.add(sampleObj_2);
-console.log(test.getUser());
+// console.log(test.getUser());
+console.log(test.hasUser(2));
