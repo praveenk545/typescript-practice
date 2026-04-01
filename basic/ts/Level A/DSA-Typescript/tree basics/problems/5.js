@@ -61,12 +61,12 @@ const ITERATIONS = 1_000_000;
 
 // --- Iterative benchmark ---
 const t1 = performance.now();
-for (let i = 0; i < ITERATIONS; i++) findYIt(root);
+for (let i = 0; i < ITERATIONS; i++) findYIt(root,5);
 const t2 = performance.now();
 
 // --- Recursive benchmark ---
 const t3 = performance.now();
-for (let i = 0; i < ITERATIONS; i++) findXRec(root);
+for (let i = 0; i < ITERATIONS; i++) findXRec(root,5);
 const t4 = performance.now();
 
 console.log(`Iterative : ${(t2 - t1).toFixed(3)} ms`);
