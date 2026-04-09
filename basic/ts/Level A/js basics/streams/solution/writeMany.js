@@ -1,4 +1,5 @@
 const fs=require("fs/promises");
+const { pipeline } = require("stream");
 
 // (async()=>{
 // const destFile = await fs.open("./text-copy.text",'w');
@@ -51,12 +52,15 @@ const fs=require("fs/promises");
     const readStream = srcFile.createReadStream();
     const writeStream = destFile.createWriteStream();
 
-    readStream.pipe(writeStream);
-    readStream.on('data', (data)=>{
-    console.log(data.toString('utf-8'))
-    console.timeEnd("copy")
-    })
+    // readStream.pipe(writeStream);
+    // readStream.on('data', (data)=>{
+    // console.log(data.toString('utf-8'))
+    // console.timeEnd("copy")
+    // })
 
-
+  pipeline(readStream, writeStream, (err)=>{
+    console.log(err);
+    console.timeEnd("copy");
+  })
 
 })();
