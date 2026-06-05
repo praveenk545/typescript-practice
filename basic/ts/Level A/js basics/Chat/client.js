@@ -23,19 +23,31 @@ const moveCursoe = (dx,dy) =>{
 }
 
 net.createServer();
+let id;
 const client =net.createConnection({host:"127.0.0.1",port : 3008}, async ()=>{
     console.log("connect to the server")
     const ask = async() =>{
       const msg = await rl.question(" Enter a message >");
       await moveCursoe(0,-1)
       await clearLine(0)
-      client.write(msg);
+      client.write(`${id}-message-${msg}`);
     }
     ask();
     client.on("data",async(data)=>{
+        if(data.toString('utf-8').substring(0,2)=='id'){
+   //when we are getting the id
+    id = data.toString('utf-8').substring(3);
+    // console.log(id,'grab id')
+    console.log(`Your id is ${id}!\n`)
+        }
+        else{
+   // when we are getting a message
+   console.log()
     await moveCursoe(0,-1)
     await clearLine(0);
     console.log(data.toString('utf-8'))
+        }
+
     ask();
 })
   
