@@ -6,9 +6,11 @@ const unDirectedGrapph = (edges, src, dist) => {
 };
 const hasPathDfs = (edges, src, dist, visited) => {
   const graph = buildGraph(edges);
+  console.log(graph,'graph')
   const stack = [src];
   while (stack.length > 0) {
     const curr = stack.pop();
+    console.log(curr,'curr')
     if (!visited.has(curr)) {
       visited.add(curr);
       if (curr === dist) return true;
